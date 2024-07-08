@@ -47,9 +47,6 @@ message UserResponse {
   string user_name = 2;
   string password  = 3;
   string email     = 4;
-  string created_at= 5;
-  string updated_at= 6;
-  string deleted_at= 7;
 }
 
 message GetAllUsers {
