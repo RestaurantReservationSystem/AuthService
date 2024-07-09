@@ -38,14 +38,14 @@ func (repo *UserRepository) DeleteUser(request *pb.IdRequest) (*pb.Void, error) 
 }
 func (repo *UserRepository) GetUserById(request *pb.IdRequest) (*pb.UserResponse, error) {
 	var userResponse pb.UserResponse
-	err := repo.Db.QueryRow("select user_name,password,email,created_at,updated_at,deleted_at from users where id=$1 and deleted_at is null", request.Id).Scan(&userResponse.UserName, &userResponse.Password, &userResponse.Email, &userResponse.CreatedAt, &userResponse.UpdatedAt, &userResponse.DeletedAt)
+	err := repo.Db.QueryRow("select user_name,password,email from users where id=$1 and deleted_at is null", request.Id).Scan(&userResponse.UserName, &userResponse.Password, &userResponse.Email)
 	if err != nil {
 		return nil, err
 	}
 	return &userResponse, err
 
 }
-func (repo *UserRepository) GeAllUser(request *pb.GetAllUserRequest) (*pb.GetAllUsers, error) {
+func (repo *UserRepository) GetAllUser(request *pb.GetAllUserRequest) (*pb.GetAllUsers, error) {
 	var (
 		params = make(map[string]interface{})
 		arr    []interface{}
@@ -74,7 +74,7 @@ func (repo *UserRepository) GeAllUser(request *pb.GetAllUserRequest) (*pb.GetAll
 		filter += "and offset:=offset"
 	}
 
-	query := "select user_name,password ,email,created_at,updated_at,deleted_at from users  where  deleted_at is null"
+	query := "select user_name,password ,email from users  where  deleted_at is null"
 
 	query = query + filter + limit + offset
 	query, arr = help.ReplaceQueryParams(query, params)
@@ -85,7 +85,7 @@ func (repo *UserRepository) GeAllUser(request *pb.GetAllUserRequest) (*pb.GetAll
 	var users []*pb.UserResponse
 	for rows.Next() {
 		var userResponse pb.UserResponse
-		err := rows.Scan(&userResponse.UserName, &userResponse.Password, &userResponse.Email, &userResponse.CreatedAt, &userResponse.UpdatedAt, &userResponse.DeletedAt)
+		err := rows.Scan(&userResponse.UserName, &userResponse.Password, &userResponse.Email)
 		if err != nil {
 			return nil, err
 		}

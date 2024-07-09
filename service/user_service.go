@@ -27,8 +27,8 @@ func (service *UserService) UpdateUser(ctx context.Context, in *pb.UpdatedUserRe
 func (service *UserService) GetByIdUser(ctx context.Context, in *pb.IdRequest) (*pb.UserResponse, error) {
 	return service.UserRepo.GetUserById(in)
 }
-func (service *UserService) GetAllUser(ctx context.Context, in *pb.GetAllUserRequest) (*pb.GetAllUsers, error) {
-	return service.UserRepo.GeAllUser(in)
+func (service *UserService) GetAllUsers(ctx context.Context, in *pb.GetAllUserRequest) (*pb.GetAllUsers, error) {
+	return service.UserRepo.GetAllUser(in)
 }
 func (service *UserService) LoginUser(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	return service.UserRepo.Login(in)
