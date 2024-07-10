@@ -4,11 +4,11 @@ import (
 	"auth_service/api/token"
 	pb "auth_service/genproto"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	_ "github.com/google/uuid"
 	"strconv"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 func isValidUUID(u string) bool {

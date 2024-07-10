@@ -3,6 +3,7 @@ package api
 import (
 	"auth_service/api/handlers"
 	"auth_service/api/middleware"
+
 	"github.com/gin-gonic/gin"
 )
 

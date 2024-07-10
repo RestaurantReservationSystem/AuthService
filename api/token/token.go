@@ -5,9 +5,9 @@ import (
 	pb "auth_service/genproto"
 	"errors"
 	"fmt"
-	"github.com/form3tech-oss/jwt-go"
-	_ "github.com/form3tech-oss/jwt-go"
 	"time"
+
+	"github.com/form3tech-oss/jwt-go"
 )
 
 var secret_key = config.Load().TokenKey
