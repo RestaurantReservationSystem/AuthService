@@ -4,6 +4,7 @@ import (
 	"auth_service/config"
 	pb "auth_service/genproto"
 	"auth_service/service"
+	"auth_service/storage"
 	"auth_service/storage/postgres"
 	"google.golang.org/grpc"
 	"log"
@@ -11,7 +12,7 @@ import (
 )
 
 func main() {
-	db, err := postgres.ConnectionDb()
+	db, err := storage.ConnectionDb()
 	if err != nil {
 		log.Fatal("error->%s", err.Error())
 	}
