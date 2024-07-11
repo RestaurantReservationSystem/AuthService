@@ -28,6 +28,7 @@ type UserServiceClient interface {
 	GetByIdUser(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*UserResponse, error)
 	GetAllUser(ctx context.Context, in *GetAllUserRequest, opts ...grpc.CallOption) (*GetAllUsers, error)
 	LoginUser(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	GenerateToken(ctx context.Context, in *LoginResponse, opts ...grpc.CallOption) (*AccessToken, error)
 }
 
 type userServiceClient struct {
@@ -92,6 +93,15 @@ func (c *userServiceClient) LoginUser(ctx context.Context, in *LoginRequest, opt
 	return out, nil
 }
 
+func (c *userServiceClient) GenerateToken(ctx context.Context, in *LoginResponse, opts ...grpc.CallOption) (*AccessToken, error) {
+	out := new(AccessToken)
+	err := c.cc.Invoke(ctx, "/protos.UserService/GenerateToken", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -102,6 +112,7 @@ type UserServiceServer interface {
 	GetByIdUser(context.Context, *IdRequest) (*UserResponse, error)
 	GetAllUser(context.Context, *GetAllUserRequest) (*GetAllUsers, error)
 	LoginUser(context.Context, *LoginRequest) (*LoginResponse, error)
+	GenerateToken(context.Context, *LoginResponse) (*AccessToken, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -126,6 +137,9 @@ func (UnimplementedUserServiceServer) GetAllUser(context.Context, *GetAllUserReq
 }
 func (UnimplementedUserServiceServer) LoginUser(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
+}
+func (UnimplementedUserServiceServer) GenerateToken(context.Context, *LoginResponse) (*AccessToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GenerateToken not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -248,6 +262,24 @@ func _UserService_LoginUser_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GenerateToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoginResponse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GenerateToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/protos.UserService/GenerateToken",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GenerateToken(ctx, req.(*LoginResponse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +310,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginUser",
 			Handler:    _UserService_LoginUser_Handler,
+		},
+		{
+			MethodName: "GenerateToken",
+			Handler:    _UserService_GenerateToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
