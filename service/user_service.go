@@ -33,3 +33,11 @@ func (service *UserService) GetAllUser(ctx context.Context, in *pb.GetAllUserReq
 func (service *UserService) LoginUser(ctx context.Context, in *pb.LoginRequest) (*pb.LoginResponse, error) {
 	return service.UserRepo.Login(in)
 }
+func (service *UserService) GenerateToken(ctx context.Context, in *pb.LoginResponse) (*pb.AccessToken, error) {
+	jwtToken, err := service.UserRepo.GENERATEJWTToken(in)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AccessToken{Token: jwtToken.AccessToken}, nil
+}

@@ -2,9 +2,9 @@ package postgres
 
 import (
 	pb "auth_service/genproto"
-	"auth_service/help"
+	strorage "auth_service/help"
 	"database/sql"
-	"time"
+	"fmt"
 )
 
 type UserRepository struct {
@@ -16,14 +16,15 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (repo *UserRepository) Register(request *pb.RegisterUserRequest) (*pb.Void, error) {
-	_, err := repo.Db.Exec("insert into users(user_name,password,email)values ($1,$2,$3,$4)", request.UserName, request.Password, request.Email)
+	_, err := repo.Db.Exec("insert into users(user_name,password,email) values($1,$2,$3)", request.UserName, request.Password, request.Email)
 	if err != nil {
+		fmt.Println("+++++", err)
 		return nil, err
 	}
 	return &pb.Void{}, nil
 }
 func (repo *UserRepository) UpdateUser(request *pb.UpdatedUserRequest) (*pb.Void, error) {
-	_, err := repo.Db.Exec("update users set user_name=$1,password=$2,email=$3  ,updated_at=$4 where id=$5 and deleted_at is null", request.UserName, request.Password, request.Email, time.Now(), request.Id)
+	_, err := repo.Db.Exec("update users set user_name=$1,password=$2,email=$3  where id=$4 and deleted_at is null", request.UserName, request.Password, request.Email, request.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +78,7 @@ func (repo *UserRepository) GeAllUser(request *pb.GetAllUserRequest) (*pb.GetAll
 	query := "select user_name,password ,email,created_at,updated_at,deleted_at from users  where  deleted_at is null"
 
 	query = query + filter + limit + offset
-	query, arr = help.ReplaceQueryParams(query, params)
+	query, arr = strorage.ReplaceQueryParams(query, params)
 	rows, err := repo.Db.Query(query, arr...)
 	if err != nil {
 		return nil, err
@@ -95,7 +96,7 @@ func (repo *UserRepository) GeAllUser(request *pb.GetAllUserRequest) (*pb.GetAll
 }
 func (repo *UserRepository) Login(request *pb.LoginRequest) (*pb.LoginResponse, error) {
 	var loginUser pb.LoginResponse
-	err := repo.Db.QueryRow("select user_name,password,email from  users where user_name=$1", request.UserName).Scan(&loginUser.UserName, &loginUser.Password, &loginUser.Email)
+	err := repo.Db.QueryRow("select user_name,password,email from  users where email=$1", request.Email).Scan(&loginUser.UserName, &loginUser.Password, &loginUser.Email)
 	if err != nil {
 		return nil, err
 	}

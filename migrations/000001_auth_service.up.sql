@@ -3,6 +3,7 @@ CREATE TABLE users (
                        user_name VARCHAR(50) UNIQUE NOT NULL,
                        password TEXT NOT NULL,
                        email VARCHAR(100) UNIQUE NOT NULL,
+                     token text,
                       created_at timestamp default current_timestamp,
                       updated_at timestamp default current_timestamp,
                       deleted_at timestamp
